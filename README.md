@@ -1,20 +1,24 @@
 This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/zeit/next.js/tree/canary/packages/create-next-app).
 
-# PaySmart :  Decentralized Freelancer / Agent Escrow platform
+# Inco PaySmart :  Decentralized Freelancer / Agent Escrow platform
 
 ## Introduction
 
-A new and secure way to get paid for freelancing through an agent escrow contract. Try it out!.
+A new and secure way to get paid for freelancing through an agent escrow contract using fully homomorphic encryption (FHE) . Try it out!.
+
+This is an escrow module for freelancer service operated by agents. The sender deposit money for recipient and set agent for the payment. If the sender want to release the payment, then he can ask the agent to release the payment for the recipient.
+
+Deployer will set the owner fee percent and agent fee percent. The fee percent and cancelLockTime are fixed values.
 
 ## Web 3.0 technologies Used
 
 Frontend: NextJS, postcss, tailwindcss, Theme
-web3 technologies: Web3 Modal, metamask wallet, Bunzz  XMTP
-Backend: Solidity, Node.js, Bunzz EscrowByAgent Module, Bunzz ERC20 Module
+web3 technologies: Web3 Modal, metamask wallet, Hardhat,  XMTP
+Backend: Solidity + TFHE, Node.js, EncryptedERC20 Module
 
-Blockchain: Polygon Mumbai
+Blockchain: Inco Network
 
-Project initiated and created for ETHGlobal HackFS Hackathon 2022:  
+Project initiated and created for Inco - Hackathon 2023:  
 
 ## Description
 
@@ -24,22 +28,23 @@ A user can creates a new pool by clicking either of the following
 1. Add Pool (Native) MATIC or
 2. Add Pool (ERC20) PST Token Mint PST Token.
 
-When you create a pool a pool with the PST token, you have to approve the contarct to spend the PST token on your behalf befeore tramsfering token to the smart contarct.
+When you create a pool a pool with the PST token, you have to approve the contract to spend the PST token on your behalf before transferring token to the smart contract.
 
-Once deal is completed, the agent releases token to the reciever and get its percentage.
+Once deal is completed, the agent releases token to the receiver and get its percentage.
 
-If you dont have the PaySmart (PST) Token, you can mint it by clicking on Mint PST Token.
+If you do not have the PaySmart (PST) Token, you can mint it by clicking on Mint PST Token.
 The entire project demo was deployed to Vercel
 
 ## Live DApp hosted on
 
 Live Dapp on Vercel: - <https://paysmart.vercel.app/>
 
-Deployed to Polygon Mumbai through Bunzz:
+## Deployed Contract addresses
+
 screwAddress = "0x8204861156bedE45f0aBaaf2bB752D702FCbF23A"
-https://mumbai.polygonscan.com/address/0x8204861156bedE45f0aBaaf2bB752D702FCbF23A
+https://Inco.polygonscan.com/address/0x8204861156bedE45f0aBaaf2bB752D702FCbF23A
 tokenAddress = "0x10Eb05edeA0F1d0dB7907d23541607F07CC6c35E"
-https://mumbai.polygonscan.com/address/0x10Eb05edeA0F1d0dB7907d23541607F07CC6c35E
+https://Inco.polygonscan.com/address/0x10Eb05edeA0F1d0dB7907d23541607F07CC6c35E
 
 ## Getting Started
 
@@ -62,7 +67,7 @@ E-mail - holyaustin@yahoo.com
 stay connected on twitter @holyaustin
 
 erc20
-<https://mumbai.polygonscan.com/address/0x10Eb05edeA0F1d0dB7907d23541607F07CC6c35E>
+<https://Inco.polygonscan.com/address/0x10Eb05edeA0F1d0dB7907d23541607F07CC6c35E>
 
 escrow
-<https://mumbai.polygonscan.com/address/0x8204861156bedE45f0aBaaf2bB752D702FCbF23A>
+<https://Inco.polygonscan.com/address/0x8204861156bedE45f0aBaaf2bB752D702FCbF23A>

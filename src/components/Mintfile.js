@@ -1,155 +1,183 @@
 /** @jsxRuntime classic */
 /** @jsx jsx */
 
-import React, { useState } from "react";
-import { jsx, Box } from 'theme-ui';
-import { NFTStorage } from "nft.storage";
-import { useRouter } from 'next/router'
-import { ethers } from "ethers";
-import Web3Modal from "web3modal";
+import React from "react";
+import { useState, useEffect } from "react";
+import { Link } from "react-router-dom";
+import { getInstance, provider, getTokenSignature } from "../utils/fhevm";
+import { toHexString } from "../utils/utils";
+import { Contract } from "ethers";
+import erc20ABI from "../abi/erc20/erc20ABI";
 
-import escrowABI from "../../artifacts/escrow.json";
-// import tokenABI from "../../artifacts/erc20.json";
-import tokenABI from "../../artifacts/TokenERC20.sol/TokenERC20.json";
-import { escrowAddress } from "../../config";
-const tokenAddress = "0x10Eb05edeA0F1d0dB7907d23541607F07CC6c35E"
+let instance;
+const CONTRACT_ADDRESS = "0x5E4e5347eB417982375Ef9BDe0B77F4322FCF79F";
 
+function ConfidentialERC20() {
+  const [responseMessage, setResponseMessage] = useState("");
+  const [errorMessage, setErrorMessage] = useState("");
+  const [amountMint, setAmountMint] = useState(0);
+  const [loading, setLoading] = useState("");
+  const [dialog, setDialog] = useState("");
+  const [encryptedData, setEncryptedData] = useState("");
+  const [userBalance, setUserBalance] = useState("hidden");
 
+  useEffect(() => {
+    async function fetchInstance() {
+      instance = await getInstance();
+    }
+    fetchInstance();
+  }, []);
 
-
-const MintFile = () => {
-  const navigate = useRouter();
-  const [errorMessage, setErrorMessage] = useState(null);
-  const [uploadedFile, setUploadedFile] = useState();
-  const [imageView, setImageView] = useState();
-  const [metaDataURL, setMetaDataURl] = useState();
-  const [txURL, setTxURL] = useState();
-  const [txStatus, setTxStatus] = useState();
-  const [formInput, updateFormInput] = useState({ recipient: "",  agent: "", amount: "" });
-
-  const handleFileUpload = (event) => {
-    console.log("file for upload selected...");
-    setUploadedFile(event.target.files[0]);
-    setTxStatus("");
-    setImageView("");
-    setMetaDataURl("");
-    setTxURL("");
-  };
-
-  const uploadNFTContent = async (inputFile) => {
-    const { recipient, amount } = formInput;
-    if (!recipient || !amount) return;
-    const nftStorage = new NFTStorage({ token: APIKEY, });
-    try {
-      console.log("Trying to upload file to ipfs");
-      setTxStatus("Uploading Item to IPFS & Filecoin via NFT.storage.");
-      console.log("close to metadata");
-      const metaData = await nftStorage.store({
-        name,
-        description: name,
-        image: inputFile,
-      });
-      setMetaDataURl(metaData.url);
-      console.log("metadata is: ", { metaData });
-      return metaData;
-    } catch (error) {
-      setErrorMessage("Could store file to NFT.Storage - Aborted file upload.");
-      console.log("Error Uploading Content", error);
+  const handleAmountMintChange = (e) => {
+    setAmountMint(Number(e.target.value));
+    console.log(instance);
+    if (instance) {
+      const encrypted = instance.encrypt32(Number(e.target.value));
+      setEncryptedData(toHexString(encrypted));
     }
   };
 
-
-  const sendTxToBlockchain = async () => {
-    console.log("Entered function");
-    //const { recipient, agent, amount } = formInput;
-    const recipient = formInput.recipient.toString();
-    const agent = formInput.agent.toString();
-    const amount  = formInput.amount;
-    if (!recipient || !amount) return;
-    console.log("After input check");
-
-    const web3Modal = new Web3Modal({
-      network: 'mainnet',
-      cacheProvider: true,
-    })
-
+  const mint = async (event) => {
+    event.preventDefault();
     try {
-      setTxStatus("Adding transaction to Polygon Mumbai Blockchain.");
-      console.log("Before web3 modal");
-      const web3Modal = new Web3Modal();
-      console.log("Before connection");
-      const connection = await web3Modal.connect();
-      console.log("Before provider");
-      //const provider = new ethers.providers.Web3Provider(window.ethereum);
-      const provider = new ethers.providers.Web3Provider(connection);
-      console.log("Before connectedContract");
-      const contract = new ethers.Contract(
-        tokenAddress,
-        tokenABI,
-        provider.getSigner()
-    );
-      console.log("Connected to contract", tokenAddress);
+      const signer = await provider.getSigner();
+      const contract = new Contract(CONTRACT_ADDRESS, erc20ABI, signer);
+      setLoading('Encrypting "30" and generating ZK proof...');
+      setLoading("Sending transaction...");
+      const transaction = await contract.mint("0x" + encryptedData);
+      //   const transaction = await contract["mint(bytes)"]("0x" + encryptedData);
+      setLoading("Waiting for transaction validation...");
+      await provider.waitForTransaction(transaction.hash);
+      setLoading("");
+      setDialog("Tokens have been minted!");
+    } catch (e) {
+      console.log(e);
+      setLoading("");
+      setDialog("Transaction error!");
+    }
+  };
 
-      const Tx = await contract.mint(recipient, amount, {
-        gasLimit: 900000,
-      });
-      console.log("File successfully created and added to Blockchain");
-      await Tx.wait();
-      setTxStatus("Token minted successfully!");
-      //alert("Pool created successfully!")
-      return Tx;
-    } catch (error) {
-      setErrorMessage("Failed to send tx to Polygon Mumbai.");
-      console.log(error);
+  const reencrypt = async () => {
+    try {
+      const signer = await provider.getSigner();
+      const contract = new Contract(CONTRACT_ADDRESS, erc20ABI, signer);
+      setLoading("Decrypting total supply...");
+      const { publicKey, signature } = await getTokenSignature(
+        CONTRACT_ADDRESS,
+        signer.address
+      );
+      const ciphertext = await contract.balanceOf(publicKey, signature);
+      console.log(ciphertext);
+      const userBalance = instance.decrypt(CONTRACT_ADDRESS, ciphertext);
+      console.log(ciphertext, userBalance);
+      setUserBalance(userBalance);
+      setLoading("");
+    } catch (e) {
+      console.log(e);
+      setLoading("");
+      setDialog("Error during reencrypt!");
     }
   };
 
   return (
-    <Box as="section"  sx={styles.section}>
-<div className="bg-purple-100 text-4xl text-center text-black font-bold pt-10">
-        <h1> Mint PaySmart Token (PST)</h1>
+    <div className="mt-5">
+      <Link to="/">Back to Main Page</Link>
+      <div className="flex flex-col text-center justify-center items-center mb-10 mt-10">
+        <img src={"/band.svg"} alt="Band" />
+        <h1 className="my-10 text-2xl font-bold text-black">
+          Confidential ERC20
+        </h1>
+        <img src={"/band.svg"} alt="Band" />
       </div>
-      <div className="bg-purple-100 text-xl text-center text-black font-bold pt-10">
-        <h3> Minting done by Minter only</h3>
-      </div>
-      <div className="flex justify-center bg-purple-100">
-        <div className="w-1/2 flex flex-col pb-12 ">
-        <input
-            placeholder="Recipient"
-            className="mt-5 border rounded p-4 text-xl"
-            onChange={(e) => updateFormInput({ ...formInput, recipient: e.target.value })}
-          />
-
-                  <input
-            placeholder="Amount"
-            className="mt-5 border rounded p-4 text-xl"
-            onChange={(e) => updateFormInput({ ...formInput, amount: e.target.value })}
-          />
-
-
-          <div className="MintNFT text-xl text-black">
-          <br />
-            {txStatus && <p className="text-xl">{txStatus}</p>}
-            <br />
-            {txURL && <p><a href={txURL} className="text-blue">See the mint transaction</a></p>}
-        
+      <div className="flex flex-row">
+        <div className="flex flex-col w-1/2 p-4">
+          <div className="bg-black py-10 px-10 text-left mb-6">
+            <div className="text-white">
+              Name:{" "}
+              <span className="text-custom-green">Confidential ERC-20</span>
+            </div>
+            <div className="text-white">
+              Symbol: <span className="text-custom-green">CUSD</span>
+            </div>
+            <div className="text-white">
+              Address:{" "}
+              <span className="text-custom-green">
+                {CONTRACT_ADDRESS.substring(0, 5) +
+                  "..." +
+                  CONTRACT_ADDRESS.substring(
+                    CONTRACT_ADDRESS.length - 5,
+                    CONTRACT_ADDRESS.length
+                  )}
+              </span>
+            </div>
+            <div className="text-white">
+              Your Balance:{" "}
+              <span className="text-custom-green">{userBalance}</span>
+            </div>
+            <button
+              className="bg-gray-200 hover:bg-blue-400 text-black font-bold py-2 px-4 rounded mb-8"
+              onClick={reencrypt}
+            >
+              Decrypt own balance
+            </button>
           </div>
-
-          <button type="button" onClick={(e) => sendTxToBlockchain()} className="font-bold mt-20 bg-purple-700 text-white text-2xl rounded p-4 shadow-lg">
-            Mint Token
-          </button>
+          {responseMessage && (
+            <p className="mb-4 text-blue-500">{responseMessage}</p>
+          )}
+          {errorMessage && <p className="mb-4 text-red-500">{errorMessage}</p>}
+          <form onSubmit={mint}>
+            <input
+              type="number"
+              placeholder="Enter amount to mint"
+              value={amountMint}
+              onChange={handleAmountMintChange}
+              className="border rounded-md px-4 py-2 mb-1 bg-white"
+            />
+            <button
+              type="submit"
+              className="bg-blue-500 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded mb-8"
+            >
+              Mint
+            </button>
+          </form>
+          {encryptedData && (
+            <div>
+              <p>Generated Ciphertext:</p>
+              <div className="overflow-y-auto h-10 flex flex-col">
+                <p>{"0x" + encryptedData.substring(0, 50) + "..."}</p>
+              </div>
+            </div>
+          )}
+          {dialog && <div>{dialog}</div>}
+          {loading && <div>{loading}</div>}
+        </div>
+        <div className="flex flex-col w-1/2 p-4 overflow-y-auto h-96 ">
+          <div className="text-lg">Code Snippets:</div>
+          <br></br>
+          <div className="text-sm">
+            The user balances are stored on-chain and encrypted in the euint32
+            format. An encrypted amount of tokens for the mint is generated on
+            the client side and sent to the contract. The total supply is also
+            encrypted.
+          </div>
+          <img src={"/CodeSvg1.svg"} alt="CodeSvg1" />
+          <div className="text-sm">
+            Users are able to view their own decrypted balances.
+          </div>
+          <img src={"/CodeSvg2.svg"} alt="CodeSvg2" />
+          <div>
+            Smart Contract Implementation:{" "}
+            <a
+              target="_blank"
+              href="https://docs.inco.network/getting-started/example-dapps/erc-20"
+            >
+              Here
+            </a>
+          </div>
         </div>
       </div>
-    </Box>
-
+    </div>
   );
-};
-export default MintFile;
+}
 
-const styles = {
-  section: {
-    backgroundColor: 'primary',
-    pt: [17, null, null, 20, null],
-    pb: [6, null, null, 12, 16],
-  },
-};
+export default ConfidentialERC20;

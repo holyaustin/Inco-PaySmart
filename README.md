@@ -25,7 +25,7 @@ Project initiated and created for Inco - Hackathon 2023:
 This project was made using several technologies. The front-end was designed using a server-side-rendering javascript tech known as NextJS. the latest version of Next was used because of how fast it was to build the project.  
 A user can creates a new pool by clicking either of the following
 
-1. Add Pool (Native) INC or
+1. Add Pool (Native) INCO or
 2. Add Pool (ERC20) PST Token Mint PST Token.
 
 When you create a pool a pool with the PST token, you have to approve the contract to spend the PST token on your behalf before transferring token to the smart contract.

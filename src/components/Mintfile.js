@@ -9,7 +9,8 @@ import { ethers } from "ethers";
 import Web3Modal from "web3modal";
 
 import escrowABI from "../../artifacts/escrow.json";
-import tokenABI from "../../artifacts/erc20.json";
+// import tokenABI from "../../artifacts/erc20.json";
+import tokenABI from "../../artifacts/TokenERC20.sol/TokenERC20.json";
 import { escrowAddress } from "../../config";
 const tokenAddress = "0x10Eb05edeA0F1d0dB7907d23541607F07CC6c35E"
 

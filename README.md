@@ -25,7 +25,7 @@ Project initiated and created for Inco - Hackathon 2023:
 This project was made using several technologies. The front-end was designed using a server-side-rendering javascript tech known as NextJS. the latest version of Next was used because of how fast it was to build the project.  
 A user can creates a new pool by clicking either of the following
 
-1. Add Pool (Native) MATIC or
+1. Add Pool (Native) INC or
 2. Add Pool (ERC20) PST Token Mint PST Token.
 
 When you create a pool a pool with the PST token, you have to approve the contract to spend the PST token on your behalf before transferring token to the smart contract.
@@ -37,14 +37,18 @@ The entire project demo was deployed to Vercel
 
 ## Live DApp hosted on
 
-Live Dapp on Vercel: - <https://paysmart.vercel.app/>
+Live Dapp on Vercel: - <https://paysmart-inco.vercel.app/>
 
 ## Deployed Contract addresses
 
-screwAddress = "0x8204861156bedE45f0aBaaf2bB752D702FCbF23A"
-https://Inco.polygonscan.com/address/0x8204861156bedE45f0aBaaf2bB752D702FCbF23A
-tokenAddress = "0x10Eb05edeA0F1d0dB7907d23541607F07CC6c35E"
-https://Inco.polygonscan.com/address/0x10Eb05edeA0F1d0dB7907d23541607F07CC6c35E
+EncryptedERC20 contract
+<https://explorer.inco.network/address/0x5E4e5347eB417982375Ef9BDe0B77F4322FCF79F>
+
+escrow contract
+<https://explorer.inco.network/address/0x60cF847C6Ea49009ae290F749451F4CB66CAD0B2>
+
+Decrypt contract
+https://explorer.inco.network/address/0x1B7a6536f23a16e198246A3f80Cd646f86856F11
 
 ## Getting Started
 
@@ -65,9 +69,3 @@ You can start editing the page by modifying `pages/index.js`. The page auto-upda
 E-mail - holyaustin@yahoo.com
 
 stay connected on twitter @holyaustin
-
-erc20
-<https://Inco.polygonscan.com/address/0x10Eb05edeA0F1d0dB7907d23541607F07CC6c35E>
-
-escrow
-<https://Inco.polygonscan.com/address/0x8204861156bedE45f0aBaaf2bB752D702FCbF23A>

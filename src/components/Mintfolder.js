@@ -13,8 +13,8 @@ import Web3Modal from "web3modal";
 
 import escrowABI from "../../artifacts/escrow.json";
 import { escrowAddress } from "../../config2";
-const tokenAddress = "0x8204861156bedE45f0aBaaf2bB752D702FCbF23A"
-const erc220 = "0x8204861156bedE45f0aBaaf2bB752D702FCbF23A"
+const tokenAddress = "0x5E4e5347eB417982375Ef9BDe0B77F4322FCF79F"
+const erc220 = "0x5E4e5347eB417982375Ef9BDe0B77F4322FCF79F"
 
 const MintFile = () => {
   const navigate = useRouter();
@@ -75,7 +75,7 @@ const MintFile = () => {
   return (
     <Box as="section"  sx={styles.section}>
             <div className="bg-purple-100 text-4xl text-center text-black font-bold pt-10">
-        <h1> Create Pool MATIC</h1>
+        <h1> Create Pool INCO</h1>
       </div>
       
       <div className="flex justify-center bg-purple-100">
@@ -105,7 +105,7 @@ const MintFile = () => {
           </div>
 
           <button type="button" onClick={(e) => sendTxToBlockchain()} className="font-bold mt-20 bg-purple-700 text-white text-2xl rounded p-4 shadow-lg">
-            Create Pool MATIC
+            Create Pool INCO
           </button>
         </div>
       </div>

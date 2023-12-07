@@ -63,10 +63,10 @@ export default function Header() {
           <a>Home</a>
           </Link>
           <Link href="/addpool">
-          <a>Add Pool (Native) MATIC</a>
+          <a>Create Pool (Native) INCO</a>
           </Link>
           <Link href="/addtoken">
-          <a>Add Pool (ERC20) PST Token</a>
+          <a>Create Pool (ERC20) PST Token</a>
           </Link>
           <Link href="/minttoken">
           <a>Mint PST Token</a>
